@@ -22,11 +22,6 @@ def index():
 		username = reg_form.username.data
 		password = reg_form.password.data
 
-		# Check username exists
-		user_object = User.query.filter(username==username).first()
-		if user_object:
-			return 'username already taken :('
-
 		user = User(username=username, password=password)
 		db.session.add(user)
 		db.session.commit()
