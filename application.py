@@ -1,5 +1,8 @@
+from time import localtime, strftime
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
+
 
 from wtform_fields import *
 from models import *
@@ -12,6 +15,11 @@ app.secret_key = 'topsecret'
 # Configure DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hpxyudbuipqkzx:407174d5c63e42b31a1800a0cdbe7e0fcbbfdd97b88f695c571219eb41cd6461@ec2-54-83-201-84.compute-1.amazonaws.com:5432/d80tqsaa7a8g17'
 db = SQLAlchemy(app)
+
+
+# Initialize Flask-SocketIO
+socketio = SocketIO(app)
+ROOMS = ['lounge', 'news', 'games', 'coding']
 
 
 # Configure flask login
@@ -64,11 +72,11 @@ def login():
 
 @app.route('/chat', methods=('GET', 'POST'))
 def chat():
-	if not current_user.is_authenticated:
-		flash('Please login.', 'danger')
-		return redirect(url_for('login'))
+	# if not current_user.is_authenticated:
+	# 	flash('Please login.', 'danger')
+	# 	return redirect(url_for('login'))
 
-	return 'chat with me'
+	return render_template('chat.html', username=current_user.username, rooms=ROOMS)
 
 
 @app.route('/logout', methods=['GET'])
@@ -80,5 +88,26 @@ def logout():
 
 	return redirect(url_for('login'))
 
+
+@socketio.on('message')
+def message(data):
+	send({'msg': data['msg'],
+		  'username': data['username'],
+		  'time_stamp': strftime('%b-%d %I:%M%p', localtime()),
+		}, room=data['room'])
+
+
+@socketio.on('join')
+def join(data):
+	join_room(data['room'])
+	send({'msg': data['username'] + " has joined the " + data['room']}, room=data['room'])
+
+
+@socketio.on('leave')
+def leave(data):
+	leave_room(data['room'])
+	send({'msg': data['username'] + " has left the " + data['room']}, room=data['room'])
+
+
 if __name__ == '__main__':
-	app.run(debug=True)
+	socketio.run(app, debug=True)
