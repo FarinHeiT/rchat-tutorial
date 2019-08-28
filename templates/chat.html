@@ -1,52 +1,104 @@
+
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
 </head>
+
 <body>
-	<nav>
-		
-	</nav>
 
-	<div id="main-section">
+<div class="container">
+<h3 class=" text-center">Messaging</h3>
+<div class="messaging">
+	<div class="inbox_msg">
+		<div class="inbox_people">
+			<div class="headind_srch">
+				<div class="recent_heading">
+					<h4>Recent</h4>
+				</div>
+				<div class="srch_bar">
+					<div class="stylish-input-group">
+						<input type="text" class="search-bar"  placeholder="Search" >
+						<span class="input-group-addon">
+							<button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+						</span> </div>
+					</div>
+				</div>
 
-		{# Room selection #}
-		<nav id='sidebar'>
-			<h4>ROOMS</h4>
-			{% for room in rooms %}
-				<p class="select-room">{{ room|title }}</p>
-			{% endfor %}
-		</nav>
-		
-		{# Message area #}
-		<div id="rightside-pannel">
-			{# Display message #}
-			<div id="display-message-section">
-				
+				{# Room selection #}
+				<div class="inbox_chat">
+					{% for room in rooms %}
+						<div class="chat_list">
+							<div class="chat_people">
+								{# room avatar #}
+								{# <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div> #}
+								<div class="chat_ib">
+									<h5>{{ room|title }}</h5><span class="chat_date">CountOfUsers</span>
+									<p>Room description.</p>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+
 			</div>
+			<div class="mesgs">
+				<div class="msg_history">
 
-			{# Input message #}
-			<div id="input-area">
-				<input type="text" id="user_message" placeholder="Type here..." autocomplete="off">
-				<button type="button" id="send_message">Send</button>
+				</div>
+					<div class="type_msg">
+						<div class="input_msg_write">
+							<input type="text" class="write_msg" placeholder="Type a message" />
+							<button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
+			
+			{# Template for outgoing message #}
+			<template id='out-msg'>
+				<div class="outgoing_msg">
+					<div class="sent_msg">
+						<span class="username" hidden></span>
+						<p></p>
+						<span class="time_date"></span>
+					</div>
+				</div>
+			</template>
 
-	</div>
+			{# Template for ingoing message #}
+			<template id="in-msg">
+				<div class="incoming_msg">
+					<!-- Avatar displaying -->
+					<!-- <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div> -->
+					<div class="received_msg">
+						<div class="received_withd_msg">
+							<span class="username"></span>
+							<p></p>
+							<span class="time_date"></span>
+						</div>
+					</div>
+				</div>
+			</template>
 
-	{# Get username #}
-	<script>
-		const username = `{{ username }}`;
-	</script>
+			{# Get username #}
+			<script>
+				const username = `{{ username }}`;
+				const current_user_username = `{{ current_user.username }}`;
+			</script>
 
-	{# Custom chat JS #}
-	<script src="{{ url_for('static', filename='scripts/chat_page.js') }}"></script>
+			{# SocketIO JS #}
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js" integrity="sha256-i2Orhi397HWPn93rsCUTW8HBoso65vY/VNTllm9Kuqo=" crossorigin="anonymous"></script>
 
-	{# SocketIO JS #}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js" integrity="sha256-i2Orhi397HWPn93rsCUTW8HBoso65vY/VNTllm9Kuqo=" crossorigin="anonymous"></script>
+			{# Custom SocketIO JS #}
+			<script src="{{ url_for('static', filename='scripts/socketio.js') }}"></script>
 
-	{# Custom SocketIO JS #}
-	<script src="{{ url_for('static', filename='scripts/socketio.js') }}"></script>
-	
-</body>
-</html>
+			{# Improve user experience JS #}
+			<script src="{{ url_for('static', filename='scripts/chat_page.js') }}"></script>
+
+    </body>
+    </html>
