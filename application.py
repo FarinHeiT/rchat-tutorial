@@ -1,5 +1,5 @@
 from time import localtime, strftime
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
@@ -18,9 +18,18 @@ db = SQLAlchemy(app)
 
 
 # Initialize Flask-SocketIO
-socketio = SocketIO(app)
-ROOMS = ['lounge', 'news', 'games', 'coding']
+# ping_timeout - timeout begore for triggering disconnect event
+# ping_interval - inteval between pinging with server
+socketio = SocketIO(app, ping_timeout=5, ping_interval=2)
 
+ROOMS = [
+	'lounge',
+	'news',
+	'games',
+	'coding'
+]
+
+USERS = {}
 
 # Configure flask login
 login = LoginManager(app)
@@ -75,7 +84,6 @@ def chat():
 	# if not current_user.is_authenticated:
 	# 	flash('Please login.', 'danger')
 	# 	return redirect(url_for('login'))
-
 	return render_template('chat.html', username=current_user.username, rooms=ROOMS)
 
 
@@ -89,6 +97,20 @@ def logout():
 	return redirect(url_for('login'))
 
 
+@app.route('/rooms_info')
+def rooms_info():
+	'''  Info about users for dev purposes only '''
+	return jsonify(USERS)
+
+@app.route('/room_users')
+def room_users():
+	''' Returns JSON with list of users in each room '''
+	result = {}
+	for room in ROOMS:
+		result[room] = dict([user for user in USERS.items() if user[1]['room'] == room])
+	return jsonify(result)
+
+
 @socketio.on('message')
 def message(data):
 	print(f'\n\n\n{data}\n\n\n')
@@ -100,14 +122,24 @@ def message(data):
 
 @socketio.on('join')
 def join(data):
+
+	USERS[request.sid] = {'username': data['username'],
+						  'room': data['room'].lower()}
 	join_room(data['room'])
 	send({'msg': data['username'] + " has joined the " + data['room']}, room=data['room'])
 
 
 @socketio.on('leave')
 def leave(data):
+	USERS.pop(request.sid)
 	leave_room(data['room'])
 	send({'msg': data['username'] + " has left the " + data['room']}, room=data['room'])
+
+
+@socketio.on('disconnect')
+def disconnect():
+	print('disconnecting')
+	USERS.pop(request.sid)
 
 
 if __name__ == '__main__':
