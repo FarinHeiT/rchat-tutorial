@@ -1,3 +1,4 @@
+import os
 from time import localtime, strftime
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
@@ -9,11 +10,12 @@ from models import *
 
 # Configure app
 app = Flask(__name__)
-app.secret_key = 'topsecret'
+app.secret_key = os.environ.get('SECRET')
 
 
 # Configure DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hpxyudbuipqkzx:407174d5c63e42b31a1800a0cdbe7e0fcbbfdd97b88f695c571219eb41cd6461@ec2-54-83-201-84.compute-1.amazonaws.com:5432/d80tqsaa7a8g17'
+# User var from Heroku not to expose the DB URI
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 
@@ -151,4 +153,4 @@ def disconnect():
 
 
 if __name__ == '__main__':
-	socketio.run(app, debug=True)
+	app.run(app, debug=True)
