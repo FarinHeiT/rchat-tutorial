@@ -111,6 +111,13 @@ def room_users():
 	return jsonify(result)
 
 
+@app.route('/chatReload')
+def chatReload():
+	USERS = {}
+	socketio.emit('chatReload')
+	return redirect(url_for('index'))
+
+
 @socketio.on('message')
 def message(data):
 	print(f'\n\n\n{data}\n\n\n')
@@ -140,6 +147,7 @@ def leave(data):
 def disconnect():
 	print('disconnecting')
 	USERS.pop(request.sid)
+
 
 
 if __name__ == '__main__':

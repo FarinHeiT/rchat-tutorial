@@ -77,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.querySelector('.write_msg').focus();
 	}
 
+
+	// Reloading chat
+	socket.on('chatReload', function() {
+		location.reload()
+	});
+
 	// Print system message
 	function printSysMsg(msg) {
 		const p = document.createElement('p');
@@ -103,22 +109,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 
-	// Display USERS dict - for dev purposes only
-	setInterval(getRooms, 1000);
+	// // Display USERS dict - for dev purposes only
+	// setInterval(getRooms, 1000);
 
-	function getRooms() {
-		var xhttp = new XMLHttpRequest();
-  		xhttp.onreadystatechange = function() {
-    	  if (this.readyState == 4 && this.status == 200) {
-      		document.getElementById("rooms_info").innerHTML =
-      		this.responseText;
-    	  }
-  		};
-    	xhttp.open("GET", "/rooms_info", true);
-    	xhttp.send();
-	}
+	// function getRooms() {
+	// 	var xhttp = new XMLHttpRequest();
+ //  		xhttp.onreadystatechange = function() {
+ //    	  if (this.readyState == 4 && this.status == 200) {
+ //      		document.getElementById("rooms_info").innerHTML =
+ //      		this.responseText;
+ //    	  }
+ //  		};
+ //    	xhttp.open("GET", "/rooms_info", true);
+ //    	xhttp.send();
+	// }
 
-	// Display USERS dict - for dev purposes only
+	// Display count of users in rooms
 	setInterval(updateUsers, 1000);
 
 	function updateUsers() {

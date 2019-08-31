@@ -5,22 +5,67 @@
 	Login
 {% endblock %}
 
+{% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="icon" href="Favicon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+{% endblock %}
+
 
 {% block content %}
-	<h2>Login now!</h2>
-	<p>Enter your username/password to start RChat</p>
 
-	<form action="{{ url_for('login') }}" method="POST">
-		
-		{{ displayField(form.username, 'Username', autocomplete='off', autofocus=true) }}
+	<main class="login-form">
+	    <div class="cotainer">
+	        <div class="row justify-content-center">
+	            <div class="col-md-8">
+	                <div class="card">
+	                    <div class="card-header">Login</div>
+	                    <div class="card-body">
+	                        <form action="{{ url_for('login') }}" method="POST">
+	                            <div class="form-group row">
+	                                <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
+	                                <div class="col-md-6">
+	                                	{{ displayField(form.username, 'Username', autocomplete='off', autofocus=true, class="form-control") }}
+	                                </div>
+	                            </div>
 
-		{{ displayField(form.password, 'Password') }}
+	                            <div class="form-group row">
+	                                <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+	                                <div class="col-md-6">
+	                                	{{ displayField(form.password, 'Password', class="form-control") }}
+	                                </div>
+	                            </div>
 
-		<div>
-			{{ form.submit_button }}
-		</div>
+	                            <div class="col-md-6 offset-md-4">
+	                            	{{ form.submit_button(class="btn btn-primary") }}
 
-		{{ form.csrf_token }}
+	                                <a href="#" class="btn btn-link">
+	                                    Forgot Your Password?
+	                                </a>
+	                                <a href="{{ url_for('index') }}" class="btn btn-link">
+	                                    Register
+	                                </a>
+	                            </div>
+	                    </div>
+						{{ form.csrf_token }}
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    </div>
 
-	</form>
+	</main>
+
 {% endblock %}
